@@ -131,6 +131,8 @@ export class Scrapeless implements INodeType {
 		const items = this.getInputData();
 		const returnData: INodeExecutionData[] = [];
 
+		const helpers = this.helpers;
+
 
 		// Process each item
 		for (let i = 0; i < items.length; i++) {
@@ -151,13 +153,13 @@ export class Scrapeless implements INodeType {
 
 				switch (resource) {
 					case 'crawler':
-						responseItem = await handleCrawlerOperation(operation, context);
+						responseItem = await handleCrawlerOperation(helpers, operation, context);
 						break;
 					case 'universalScrapingApi':
-						responseItem = await handleUniversalScrapingApiOperation(operation, context);
+						responseItem = await handleUniversalScrapingApiOperation(helpers, operation, context);
 						break;
 					case 'scrapingApi':
-						responseItem = await handleScrapingApiOperation(operation, context);
+						responseItem = await handleScrapingApiOperation(helpers, operation, context);
 						break;
 					default:
 						throw new NodeOperationError(this.getNode(), `Unsupported resource: ${resource}`);

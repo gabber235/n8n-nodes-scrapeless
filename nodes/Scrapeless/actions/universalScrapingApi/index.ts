@@ -1,19 +1,20 @@
 import { IDataObject, INodeExecutionData } from "n8n-workflow";
 import { getRequestConfig, safeParseJson } from "../../common";
-import { INodeContext } from "../../types";
-import { ScrapelessClient, UniversalJsRenderInput } from '@scrapeless-ai/sdk'
+import { IHelpers, INodeContext } from "../../types";
+import { UniversalService } from "../../libs/request";
+import { UniversalJsRenderInput } from "../../types/universal";
 
-export async function handleUniversalScrapingApiOperation(operation: string, context: INodeContext): Promise<INodeExecutionData> {
+export async function handleUniversalScrapingApiOperation(helpers: IHelpers, operation: string, context: INodeContext): Promise<INodeExecutionData> {
 	switch (operation) {
 		case 'webUnlocker':
-			return await handleUniversalScrapingApiWebUnlocker(context);
+			return await handleUniversalScrapingApiWebUnlocker(helpers, context);
 		default:
 			throw new Error(`Unsupported operation: ${operation}`);
 	}
 }
 
-async function handleUniversalScrapingApiWebUnlocker(context: INodeContext): Promise<INodeExecutionData> {
-		const { apiKey, baseUrl } = await getRequestConfig(context);
+async function handleUniversalScrapingApiWebUnlocker(helpers: IHelpers, context: INodeContext): Promise<INodeExecutionData> {
+	const { apiKey, baseUrl } = await getRequestConfig(context);
 
 
 	const url = context.functionThis.getNodeParameter('url', context.i) as string;
@@ -32,12 +33,13 @@ async function handleUniversalScrapingApiWebUnlocker(context: INodeContext): Pro
 	}
 
 
-	const client = new ScrapelessClient({
+	const client = new UniversalService({
 		apiKey: apiKey,
-		baseApiUrl: baseUrl
+		baseUrl: baseUrl,
+		helpers: helpers
 	})
 
-	const res = await client.universal.scrape({
+	const res = await client.scrape({
 		actor: 'unlocker.webunlocker',
 		input: input,
 		proxy: {

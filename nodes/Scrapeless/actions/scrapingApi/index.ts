@@ -1,19 +1,20 @@
 import { IDataObject, INodeExecutionData } from "n8n-workflow";
 import { getRequestConfig } from "../../common";
-import { INodeContext } from "../../types";
-import { ScrapelessClient } from "@scrapeless-ai/sdk";
+import { IHelpers, INodeContext } from "../../types";
+import { ScrapingService } from "../../libs/request";
 
-export async function handleScrapingApiOperation(operation: string, context: INodeContext): Promise<INodeExecutionData> {
+
+export async function handleScrapingApiOperation(helpers: IHelpers, operation: string, context: INodeContext): Promise<INodeExecutionData> {
 	switch (operation) {
 		case 'googleSearch':
-			return await handleScrapingApiGoogleSearch(context);
+			return await handleScrapingApiGoogleSearch(helpers, context);
 		default:
 			throw new Error(`Unsupported operation: ${operation}`);
 	}
 }
 
-async function handleScrapingApiGoogleSearch(context: INodeContext): Promise<INodeExecutionData> {
-	const { apiKey } = await getRequestConfig(context);
+async function handleScrapingApiGoogleSearch(helpers: IHelpers, context: INodeContext): Promise<INodeExecutionData> {
+	const { apiKey, baseUrl } = await getRequestConfig(context);
 
 	const q = context.functionThis.getNodeParameter('q', context.i) as string;
 	const hl = context.functionThis.getNodeParameter('hl', context.i) as string;
@@ -25,27 +26,31 @@ async function handleScrapingApiGoogleSearch(context: INodeContext): Promise<INo
 		gl: gl,
 	}
 
-	const client = new ScrapelessClient({
+	const client = new ScrapingService({
 		apiKey: apiKey,
+		baseUrl: baseUrl,
+		helpers: helpers
 	})
 
-	const task = await client.deepserp.createTask({
-    actor: 'scraper.google.search',
-    input: input,
-  });
-  if (task.status === 200) {
-    return {
+	const task = await client.createTask({
+		actor: 'scraper.google.search',
+		input: input,
+	});
+
+	if (task.status === 200) {
+		return {
 			json: task.data as unknown as IDataObject
 		}
-  }
+	}
 
-  while (true) {
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    const result = await client.deepserp.getTaskResult(task.data.taskId);
-    if (result.status === 200) {
-      return {
+	while (true) {
+		await new Promise(resolve => setTimeout(resolve, 1000));
+		const result = await client.getTaskResult(task.data.taskId);
+
+		if (result.status === 200) {
+			return {
 				json: result.data as unknown as IDataObject
 			}
-    }
-  }
+		}
+	}
 }

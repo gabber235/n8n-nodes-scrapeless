@@ -1,27 +1,28 @@
-import { INodeContext } from "../../types";
-import { ScrapingCrawl } from "@scrapeless-ai/sdk"
+import { IHelpers, INodeContext } from "../../types";
 import { IDataObject, INodeExecutionData, NodeOperationError } from "n8n-workflow";
-import {  getRequestConfig } from "../../common";
+import { getRequestConfig } from "../../common";
+import { ScrapingCrawl } from "../../libs/request";
 
-export async function handleCrawlerOperation(operation: string, context: INodeContext): Promise<INodeExecutionData> {
+export async function handleCrawlerOperation(helpers: IHelpers, operation: string, context: INodeContext): Promise<INodeExecutionData> {
 	switch (operation) {
 		case 'scrape':
-			return await handleCrawlerScrape(context);
+			return await handleCrawlerScrape(helpers, context);
 		case 'crawl':
-			return await handleCrawlerCrawl(context);
+			return await handleCrawlerCrawl(helpers, context);
 		default:
 			throw new Error(`Unsupported operation: ${operation}`);
 	}
 }
 
-async function handleCrawlerScrape(context: INodeContext): Promise<INodeExecutionData> {
+async function handleCrawlerScrape(helpers: IHelpers, context: INodeContext): Promise<INodeExecutionData> {
 	const { apiKey, baseUrl } = await getRequestConfig(context);
 
 	const url = context.functionThis.getNodeParameter('url', context.i) as string;
 
 	const client = new ScrapingCrawl({
 		apiKey: apiKey,
-		baseUrl: baseUrl
+		baseUrl: baseUrl,
+		helpers: helpers
 	})
 
 	const res = await client.scrapeUrl(url, {
@@ -47,7 +48,7 @@ async function handleCrawlerScrape(context: INodeContext): Promise<INodeExecutio
 
 }
 
-async function handleCrawlerCrawl(context: INodeContext): Promise<INodeExecutionData> {
+async function handleCrawlerCrawl(helpers: IHelpers, context: INodeContext): Promise<INodeExecutionData> {
 	const { apiKey, baseUrl } = await getRequestConfig(context);
 
 	const url = context.functionThis.getNodeParameter('url', context.i) as string;
@@ -55,7 +56,8 @@ async function handleCrawlerCrawl(context: INodeContext): Promise<INodeExecution
 
 	const client = new ScrapingCrawl({
 		apiKey: apiKey,
-		baseUrl: baseUrl
+		baseUrl: baseUrl,
+		helpers: helpers
 	})
 
 	const res = await client.crawlUrl(url, {
