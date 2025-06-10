@@ -33,4 +33,4 @@ Configure a basic query and hit "Test step" to try a search.
 
 ## License
 
-[MIT](https://github.com/scrapeless-ai/n8n-node-scrapeless/blob/main/LICENSE.md)
+[MIT](https://github.com/scrapeless-ai/n8n-nodes-scrapeless/blob/main/LICENSE.md)

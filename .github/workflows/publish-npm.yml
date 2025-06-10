@@ -13,6 +13,8 @@ on:
       - 'package.json'
       - 'tsconfig.json'
       - 'gulpfile.js'
+      - 'README.md'
+      - 'LICENSE.md'
 
 permissions:
   contents: write
