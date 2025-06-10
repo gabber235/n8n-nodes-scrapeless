@@ -1,0 +1,149 @@
+# This workflow will run tests using node and then publish a package to GitHub Packages when a release is created
+# For more information see: https://docs.github.com/en/actions/publishing-packages/publishing-nodejs-packages
+
+name: Publish NPM
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'credentials/**'
+      - 'nodes/**'
+      - 'package.json'
+      - 'tsconfig.json'
+      - 'gulpfile.js'
+
+permissions:
+  contents: write
+  packages: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Install Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          registry-url: 'https://registry.npmjs.org'
+          scope: '@scrapeless-ai'
+
+      - uses: pnpm/action-setup@v4
+        name: Install pnpm
+        with:
+          version: 10
+      - name: Get pnpm store directory
+        id: pnpm-cache
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
+
+      - uses: actions/cache@v4
+        name: Setup pnpm cache
+        with:
+          path: ${{ steps.pnpm-cache.outputs.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Build package
+        run: pnpm build
+
+      - name: Setup SSH Key
+        uses: webfactory/ssh-agent@v0.7.0
+        with:
+          ssh-private-key: ${{ secrets.DEPLOY_SSH_KEY }}
+
+      - name: Add GitHub to known hosts
+        run: |
+          mkdir -p ~/.ssh
+          ssh-keyscan github.com >> ~/.ssh/known_hosts
+
+      - name: Configure Git
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Check for releasable commits
+        id: check-commits
+        run: |
+          # Get the last release tag
+          LAST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
+
+          if [ -z "$LAST_TAG" ]; then
+            echo "No previous tags found, will create initial release"
+            echo "should_release=true" >> $GITHUB_OUTPUT
+            echo "version_type=minor" >> $GITHUB_OUTPUT
+          else
+            # Check for release prefix commits (force major version update)
+            RELEASE_COMMITS=$(git log $LAST_TAG..HEAD --oneline --grep="^release" || echo "")
+            if [ -n "$RELEASE_COMMITS" ]; then
+              echo "Found release commits, triggering major version update"
+              echo "should_release=true" >> $GITHUB_OUTPUT
+              echo "version_type=major" >> $GITHUB_OUTPUT
+              exit 0
+            fi
+
+            # Check for breaking changes
+            BREAKING_COMMITS=$(git log $LAST_TAG..HEAD --grep="BREAKING CHANGE:" -i || echo "")
+            if [ -n "$BREAKING_COMMITS" ]; then
+              echo "Found breaking changes, triggering major version update"
+              echo "should_release=true" >> $GITHUB_OUTPUT
+              echo "version_type=major" >> $GITHUB_OUTPUT
+              exit 0
+            fi
+
+            # Check for new features or performance improvements
+            FEAT_COMMITS=$(git log $LAST_TAG..HEAD --oneline --grep="^feat\|^perf" || echo "")
+            if [ -n "$FEAT_COMMITS" ]; then
+              echo "Found new features, triggering minor version update"
+              echo "should_release=true" >> $GITHUB_OUTPUT
+              echo "version_type=minor" >> $GITHUB_OUTPUT
+              exit 0
+            fi
+
+            # Check other normal commits
+            COMMITS=$(git log $LAST_TAG..HEAD --oneline --grep="^fix\|^refactor\|^docs\|^style\|^test\|^build\|^ci\|^chore\|^revert" || echo "")
+            if [ -n "$COMMITS" ]; then
+              echo "Found releasable commits since $LAST_TAG"
+              echo "should_release=true" >> $GITHUB_OUTPUT
+              echo "version_type=patch" >> $GITHUB_OUTPUT
+            else
+              echo "No releasable commits found since $LAST_TAG"
+              echo "should_release=false" >> $GITHUB_OUTPUT
+            fi
+          fi
+
+      - name: Generate release
+        if: steps.check-commits.outputs.should_release == 'true'
+        run: |
+          if [ "${{ steps.check-commits.outputs.version_type }}" == "major" ]; then
+            echo "Running major release"
+            pnpm release:major
+          elif [ "${{ steps.check-commits.outputs.version_type }}" == "minor" ]; then
+            echo "Running minor release"
+            pnpm release:minor
+          else
+            echo "Running patch release"
+            pnpm release:patch
+          fi
+
+      - name: Push changes and tags
+        if: steps.check-commits.outputs.should_release == 'true'
+        run: |
+          git remote set-url origin git@github.com:${{ github.repository }}.git
+          git push --follow-tags origin main
+
+      - name: Publish package
+        if: steps.check-commits.outputs.should_release == 'true'
+        run: npm publish --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
