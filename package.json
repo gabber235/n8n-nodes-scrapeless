@@ -1,0 +1,55 @@
+{
+  "name": "n8n-nodes-scrapeless",
+  "version": "0.1.0",
+  "description": "Official n8n nodes for Scrapeless",
+  "keywords": [
+    "n8n-community-node-package",
+    "scrapeless",
+    "scraping",
+    "n8n"
+  ],
+  "license": "MIT",
+  "homepage": "https://scrapeless.com",
+  "author": {
+    "name": "Scrapeless"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/scrapeless-ai/n8n-nodes-scrapeless.git"
+  },
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc && gulp build:icons",
+    "dev": "tsc --watch",
+    "format": "prettier nodes credentials --write",
+    "lint": "eslint nodes credentials package.json",
+    "lintfix": "eslint nodes credentials package.json --fix",
+    "prepublishOnly": "npm run build && npm run lint -c .eslintrc.prepublish.js nodes credentials package.json"
+  },
+  "files": [
+    "dist"
+  ],
+  "n8n": {
+    "n8nNodesApiVersion": 1,
+    "credentials": [
+      "dist/credentials/ScrapelessApi.credentials.js"
+    ],
+    "nodes": [
+      "dist/nodes/Scrapeless/Scrapeless.node.js"
+    ]
+  },
+  "devDependencies": {
+    "@typescript-eslint/parser": "~5.45",
+    "eslint-plugin-n8n-nodes-base": "^1.11.0",
+    "gulp": "^5.0.0",
+    "n8n-workflow": "^1.82.0",
+    "prettier": "^2.8.8",
+    "typescript": "~5.0.4"
+  },
+  "peerDependencies": {
+    "n8n-workflow": "*"
+  },
+  "dependencies": {
+    "@scrapeless-ai/sdk": "^1.3.0"
+  }
+}
