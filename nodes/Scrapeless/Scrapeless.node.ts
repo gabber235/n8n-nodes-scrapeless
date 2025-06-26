@@ -40,7 +40,7 @@ export class Scrapeless implements INodeType {
 				type: 'options',
 				options: [
 					{
-						name: 'Deep SERPAPI',
+						name: 'Deep SerpApi',
 						value: 'scrapingApi',
 					},
 					{
@@ -114,6 +114,11 @@ export class Scrapeless implements INodeType {
 						name: 'Google Search',
 						value: 'googleSearch',
 						action: 'Google Search',
+					},
+					{
+						name: 'Google Trends',
+						value: 'googleTrends',
+						action: 'Google Trends',
 					},
 				]
 			},
