@@ -94,6 +94,10 @@ async function handleScrapingApiGoogleTrends(helpers: IHelpers, context: INodeCo
 	const date = context.functionThis.getNodeParameter('date', context.i) as string;
 	const hl = context.functionThis.getNodeParameter('hl', context.i) as string;
 	const tz = context.functionThis.getNodeParameter('tz', context.i) as string;
+	const geo = context.functionThis.getNodeParameter('geo', context.i) as string;
+	const cat = context.functionThis.getNodeParameter('cat', context.i) as string;
+	const property = context.functionThis.getNodeParameter('property', context.i) as string;
+
 
 	const input = {
 		q: q,
@@ -101,6 +105,9 @@ async function handleScrapingApiGoogleTrends(helpers: IHelpers, context: INodeCo
 		date: date,
 		hl: hl,
 		tz: tz,
+		geo: geo,
+		cat: cat,
+		property: property,
 	}
 
 	const client = new ScrapingService({
