@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.4.0](https://github.com/scrapeless-ai/n8n-nodes-scrapeless/compare/v0.3.0...v0.4.0) (2025-06-27)
+
+
+### Features
+
+* enhance Google Trends API integration ([9c3af62](https://github.com/scrapeless-ai/n8n-nodes-scrapeless/commit/9c3af62c18943121a02e573ab9f0ceb9279b04c7))
+
 ## [0.3.0](https://github.com/scrapeless-ai/n8n-nodes-scrapeless/compare/v0.2.2...v0.3.0) (2025-06-26)
 
 
