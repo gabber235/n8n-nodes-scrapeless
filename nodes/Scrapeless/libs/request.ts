@@ -9,7 +9,10 @@ export class ScrapelessError extends Error {
 		message: string,
 		public statusCode?: number
 	) {
-		super(`[Scrapeless]: ${message}`);
+		// check if message has prefix [Scrapeless]:
+		const hasPrefix = message.startsWith('[Scrapeless]: ');
+		const msg = hasPrefix ? message : `[Scrapeless]: ${message}`;
+		super(msg);
 		this.name = 'ScrapelessError';
 	}
 }
@@ -66,28 +69,28 @@ export abstract class BaseService {
 				returnFullResponse: true
 			})
 
-
-
 			response = {
 				...res,
 				ok: true,
-				status: res.statusCode
+				status: res.status || res.statusCode
 			}
 			data = response.body;
 		} catch (error) {
-			data = error.data;
+
+			data = error?.data || error?.response?.data;
 
 			response = {
 				...error,
 				ok: false,
-				status: error.statusCode
+				status: error.status || error.statusCode
 			}
 		}
-
 
 		if (!response.ok) {
 			let errorMessage = '';
 			let errorCode = response.status;
+
+
 			if (typeof data === 'object') {
 				if (data.error) {
 					errorMessage = data.error;
@@ -106,12 +109,17 @@ export abstract class BaseService {
 						errorMessage = `failed with status ${response.status} (TraceID: ${data.traceId})`;
 					}
 				}
+				if (data?.details) {
+					// if details is an array, use the first item's message
+					const _msgs = data?.details?.map((item: { message: string }) => item?.message) || []
+					errorMessage = _msgs?.[0] || ''
+				}
 			}
 			// If no error message has been set, use the default message
 			if (!errorMessage) {
 				errorMessage = `failed with status ${response.status}`;
 			}
-			errorMessage = `Request ${method} ${this.baseUrl}${endpoint} ${errorMessage}`;
+			errorMessage = `Request ${method} ${this.baseUrl}${endpoint} failed with reason: ${errorMessage}`;
 			// console.error(errorMessage);
 			throw new ScrapelessError(errorMessage, errorCode);
 		}
