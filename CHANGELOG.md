@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.5.1](https://github.com/gabber235/n8n-nodes-scrapeless/compare/v0.5.0...v0.5.1) (2025-10-27)
+
+
+### Bug Fixes
+
+* Allow no proxy option and format description files ([b300d15](https://github.com/gabber235/n8n-nodes-scrapeless/commit/b300d1554daf221db5bb97e857eac2b46e55edf2))
+
 ## 0.5.0 (2025-10-27)
 
 
