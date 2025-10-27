@@ -41,21 +41,21 @@ export const universalScrapingApiFields: INodeProperties[] = [
 		},
 	},
 	{
-		displayName: 'Country',
-		name: 'country',
+		displayName: 'Proxy Country',
+		name: 'proxy_country',
 		type: 'options',
-		// eslint-disable-next-line n8n-nodes-base/node-param-default-wrong-for-options
-		default: 'ANY',
+		default: '',
 		displayOptions: {
 			show: {
 				resource: ['universalScrapingApi'],
-				operation: ['webUnlocker', 'jsRender'],
+				operation: ['webUnlocker'],
 			}
 		},
 		options: countryOptions.map((country) => ({
 			name: country.label,
 			value: country.value,
 		})),
+		hint: 'Select the country for proxy routing. Leave empty to use any available proxy.',
 	},
 	{
 		displayName: 'Js Instructions',

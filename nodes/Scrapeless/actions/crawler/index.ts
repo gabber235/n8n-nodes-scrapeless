@@ -18,6 +18,7 @@ async function handleCrawlerScrape(helpers: IHelpers, context: INodeContext): Pr
 	const { apiKey, baseUrl } = await getRequestConfig(context);
 
 	const url = context.functionThis.getNodeParameter('url', context.i) as string;
+	const proxyCountry = context.functionThis.getNodeParameter('proxy_country', context.i) as string;
 
 	const client = new ScrapingCrawl({
 		apiKey: apiKey,
@@ -25,13 +26,18 @@ async function handleCrawlerScrape(helpers: IHelpers, context: INodeContext): Pr
 		helpers: helpers
 	})
 
+	const browserOptions: any = {
+		"session_name": "Crawl",
+		"session_recording": true,
+		"session_ttl": 900,
+	};
+
+	if (proxyCountry) {
+		browserOptions.proxy_country = proxyCountry;
+	}
+
 	const res = await client.scrapeUrl(url, {
-		"browserOptions": {
-			"proxy_country": "ANY",
-			"session_name": "Crawl",
-			"session_recording": true,
-			"session_ttl": 900,
-		}
+		"browserOptions": browserOptions
 	})
 
 	if (res?.status === 'completed' && res?.data) {
@@ -53,6 +59,7 @@ async function handleCrawlerCrawl(helpers: IHelpers, context: INodeContext): Pro
 
 	const url = context.functionThis.getNodeParameter('url', context.i) as string;
 	const limit = context.functionThis.getNodeParameter('limitCrawlPages', context.i) as number;
+	const proxyCountry = context.functionThis.getNodeParameter('proxy_country', context.i) as string;
 
 	const client = new ScrapingCrawl({
 		apiKey: apiKey,
@@ -60,14 +67,19 @@ async function handleCrawlerCrawl(helpers: IHelpers, context: INodeContext): Pro
 		helpers: helpers
 	})
 
+	const browserOptions: any = {
+		"session_name": "Crawl",
+		"session_recording": true,
+		"session_ttl": 900,
+	};
+
+	if (proxyCountry) {
+		browserOptions.proxy_country = proxyCountry;
+	}
+
 	const res = await client.crawlUrl(url, {
 		"limit": limit,
-		"browserOptions": {
-			"proxy_country": "ANY",
-			"session_name": "Crawl",
-			"session_recording": true,
-			"session_ttl": 900,
-		}
+		"browserOptions": browserOptions
 	})
 
 	if (res?.status === 'completed' && res?.data) {

@@ -1,4 +1,5 @@
 import { INodeProperties } from "n8n-workflow";
+import { countryOptions } from "../common";
 
 export const crawlerFields: INodeProperties[] = [
 	{
@@ -34,5 +35,22 @@ export const crawlerFields: INodeProperties[] = [
 			minValue: 1,
 		},
 		placeholder: '100',
+	},
+	{
+		displayName: 'Proxy Country',
+		name: 'proxy_country',
+		type: 'options',
+		default: '',
+		displayOptions: {
+			show: {
+				resource: ['crawler'],
+				operation: ['scrape', 'crawl'],
+			}
+		},
+		options: countryOptions.map((country) => ({
+			name: country.label,
+			value: country.value,
+		})),
+		hint: 'Select the country for proxy routing. Leave empty to use any available proxy.',
 	}
 ]

@@ -19,7 +19,7 @@ async function handleUniversalScrapingApiWebUnlocker(helpers: IHelpers, context:
 
 	const url = context.functionThis.getNodeParameter('url', context.i) as string;
 	const jsRender = context.functionThis.getNodeParameter('jsRender', context.i) as boolean;
-	const country = context.functionThis.getNodeParameter('country', context.i) as string;
+	const proxyCountry = context.functionThis.getNodeParameter('proxy_country', context.i) as string;
 	const jsInstructions = context.functionThis.getNodeParameter('jsInstructions', context.i) as any
 	const block = context.functionThis.getNodeParameter('block', context.i) as any
 	const headless = context.functionThis.getNodeParameter('headless', context.i) as boolean;
@@ -39,12 +39,15 @@ async function handleUniversalScrapingApiWebUnlocker(helpers: IHelpers, context:
 		helpers: helpers
 	})
 
+	const proxyConfig: any = {};
+	if (proxyCountry) {
+		proxyConfig.country = proxyCountry;
+	}
+
 	const res = await client.scrape({
 		actor: 'unlocker.webunlocker',
 		input: input,
-		proxy: {
-			country: country,
-		}
+		proxy: proxyConfig
 	})
 
 
