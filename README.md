@@ -2,11 +2,19 @@
 
 # n8n-node-scrapeless
 
-This repo contains Scrapeless's community node for n8n.
+> **Note:** This is NOT the official Scrapeless package. This is a community-maintained fork.
+> For the official package, visit: https://github.com/scrapeless-ai/n8n-nodes-scrapeless
+
+This repo contains a community node for n8n that integrates with Scrapeless.
 
 ## Installation
 
 Follow the [installation guide](https://docs.n8n.io/integrations/community-nodes/installation/) in the n8n community nodes documentation.
+
+Install this package using:
+```
+npm install @gabber235/n8n-nodes-scrapeless
+```
 
 ## Credentials
 
@@ -33,4 +41,4 @@ Configure a basic query and hit "Test step" to try a search.
 
 ## License
 
-[MIT](https://github.com/scrapeless-ai/n8n-nodes-scrapeless/blob/main/LICENSE.md)
+[MIT](https://github.com/gabber235/n8n-nodes-scrapeless/blob/main/LICENSE.md)
