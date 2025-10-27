@@ -1,5 +1,5 @@
-import { INodeProperties } from "n8n-workflow";
-import { countryOptions } from "../common";
+import { INodeProperties } from 'n8n-workflow';
+import { countryOptions } from '../common';
 
 export const universalScrapingApiFields: INodeProperties[] = [
 	{
@@ -12,7 +12,7 @@ export const universalScrapingApiFields: INodeProperties[] = [
 			show: {
 				resource: ['universalScrapingApi'],
 				operation: ['webUnlocker'],
-			}
+			},
 		},
 		placeholder: 'https://example.com',
 	},
@@ -25,7 +25,7 @@ export const universalScrapingApiFields: INodeProperties[] = [
 			show: {
 				resource: ['universalScrapingApi'],
 				operation: ['webUnlocker'],
-			}
+			},
 		},
 	},
 	{
@@ -37,7 +37,7 @@ export const universalScrapingApiFields: INodeProperties[] = [
 			show: {
 				resource: ['universalScrapingApi'],
 				operation: ['webUnlocker'],
-			}
+			},
 		},
 	},
 	{
@@ -49,12 +49,18 @@ export const universalScrapingApiFields: INodeProperties[] = [
 			show: {
 				resource: ['universalScrapingApi'],
 				operation: ['webUnlocker'],
-			}
+			},
 		},
-		options: countryOptions.map((country) => ({
-			name: country.label,
-			value: country.value,
-		})),
+		options: [
+			{
+				name: 'None (Use any available proxy)',
+				value: '',
+			},
+			...countryOptions.map((country) => ({
+				name: country.label,
+				value: country.value,
+			})),
+		],
 		hint: 'Select the country for proxy routing. Leave empty to use any available proxy.',
 	},
 	{
@@ -63,14 +69,14 @@ export const universalScrapingApiFields: INodeProperties[] = [
 		type: 'json',
 		default: JSON.stringify([
 			{
-				"wait": 100
-			}
+				wait: 100,
+			},
 		]),
 		displayOptions: {
 			show: {
 				resource: ['universalScrapingApi'],
 				operation: ['webUnlocker'],
-			}
+			},
 		},
 	},
 	{
@@ -78,20 +84,14 @@ export const universalScrapingApiFields: INodeProperties[] = [
 		name: 'block',
 		type: 'json',
 		default: JSON.stringify({
-			"resources": [
-				"image",
-				"font",
-				"script"
-			],
-			"urls": [
-				"https://example.com"
-			]
+			resources: ['image', 'font', 'script'],
+			urls: ['https://example.com'],
 		}),
 		displayOptions: {
 			show: {
 				resource: ['universalScrapingApi'],
 				operation: ['webUnlocker'],
-			}
+			},
 		},
 	},
-]
+];

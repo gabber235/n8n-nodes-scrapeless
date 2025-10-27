@@ -1,5 +1,5 @@
-import { INodeProperties } from "n8n-workflow";
-import { countryOptions } from "../common";
+import { INodeProperties } from 'n8n-workflow';
+import { countryOptions } from '../common';
 
 export const crawlerFields: INodeProperties[] = [
 	{
@@ -13,7 +13,7 @@ export const crawlerFields: INodeProperties[] = [
 			show: {
 				resource: ['crawler'],
 				operation: ['scrape', 'crawl'],
-			}
+			},
 		},
 		placeholder: 'https://example.com',
 	},
@@ -28,7 +28,7 @@ export const crawlerFields: INodeProperties[] = [
 			show: {
 				resource: ['crawler'],
 				operation: ['crawl'],
-			}
+			},
 		},
 		hint: 'You can only enter 100 subpages, while there is no limit in the SDK. For more details, please refer to the documentation.',
 		typeOptions: {
@@ -45,12 +45,18 @@ export const crawlerFields: INodeProperties[] = [
 			show: {
 				resource: ['crawler'],
 				operation: ['scrape', 'crawl'],
-			}
+			},
 		},
-		options: countryOptions.map((country) => ({
-			name: country.label,
-			value: country.value,
-		})),
+		options: [
+			{
+				name: 'None (Use any available proxy)',
+				value: '',
+			},
+			...countryOptions.map((country) => ({
+				name: country.label,
+				value: country.value,
+			})),
+		],
 		hint: 'Select the country for proxy routing. Leave empty to use any available proxy.',
-	}
-]
+	},
+];
