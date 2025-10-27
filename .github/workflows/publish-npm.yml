@@ -34,7 +34,7 @@ jobs:
         with:
           node-version: 20
           registry-url: 'https://registry.npmjs.org'
-          scope: '@scrapeless-ai'
+          scope: '@gabber235'
 
       - uses: pnpm/action-setup@v4
         name: Install pnpm
