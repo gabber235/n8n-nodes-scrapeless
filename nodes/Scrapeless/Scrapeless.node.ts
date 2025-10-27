@@ -1,16 +1,23 @@
 /* eslint-disable n8n-nodes-base/node-param-operation-option-action-miscased */
-import { IExecuteFunctions, INodeExecutionData, INodeType, INodeTypeDescription, NodeConnectionType, NodeOperationError } from 'n8n-workflow';
-
 import {
-	crawlerFields,
-	scrapingApiFields,
-	universalScrapingApiFields,
-} from './descriptions';
-import { INodeContext } from './types';
-import { handleCrawlerOperation, handleScrapingApiOperation, handleUniversalScrapingApiOperation } from './actions';
+	IExecuteFunctions,
+	INodeExecutionData,
+	INodeType,
+	INodeTypeDescription,
+	NodeConnectionTypes,
+	NodeOperationError,
+} from 'n8n-workflow';
 
-const inputs = [NodeConnectionType.Main];
-const outputs = [NodeConnectionType.Main];
+import { crawlerFields, scrapingApiFields, universalScrapingApiFields } from './descriptions';
+import { INodeContext } from './types';
+import {
+	handleCrawlerOperation,
+	handleScrapingApiOperation,
+	handleUniversalScrapingApiOperation,
+} from './actions';
+
+const inputs = [NodeConnectionTypes.Main];
+const outputs = [NodeConnectionTypes.Main];
 
 export class Scrapeless implements INodeType {
 	description: INodeTypeDescription = {
@@ -50,7 +57,7 @@ export class Scrapeless implements INodeType {
 					{
 						name: 'Crawler',
 						value: 'crawler',
-					}
+					},
 				],
 				noDataExpression: true,
 				default: 'scrapingApi',
@@ -64,7 +71,7 @@ export class Scrapeless implements INodeType {
 				displayOptions: {
 					show: {
 						resource: ['crawler'],
-					}
+					},
 				},
 				options: [
 					{
@@ -77,7 +84,7 @@ export class Scrapeless implements INodeType {
 						value: 'crawl',
 						action: 'Crawl',
 					},
-				]
+				],
 			},
 			{
 				displayName: 'Operation',
@@ -88,7 +95,7 @@ export class Scrapeless implements INodeType {
 				displayOptions: {
 					show: {
 						resource: ['universalScrapingApi'],
-					}
+					},
 				},
 				options: [
 					{
@@ -96,7 +103,7 @@ export class Scrapeless implements INodeType {
 						value: 'webUnlocker',
 						action: 'Web Unlocker',
 					},
-				]
+				],
 			},
 			{
 				displayName: 'Operation',
@@ -107,7 +114,7 @@ export class Scrapeless implements INodeType {
 				displayOptions: {
 					show: {
 						resource: ['scrapingApi'],
-					}
+					},
 				},
 				options: [
 					{
@@ -120,7 +127,7 @@ export class Scrapeless implements INodeType {
 						value: 'googleTrends',
 						action: 'Google Trends',
 					},
-				]
+				],
 			},
 
 			// every other operation is forData
@@ -131,18 +138,15 @@ export class Scrapeless implements INodeType {
 		name: 'scrapeless',
 	};
 
-
 	async execute(this: IExecuteFunctions): Promise<INodeExecutionData[][]> {
 		const items = this.getInputData();
 		const returnData: INodeExecutionData[] = [];
 
 		const helpers = this.helpers;
 
-
 		// Process each item
 		for (let i = 0; i < items.length; i++) {
 			try {
-
 				const context: INodeContext = {
 					functionThis: this,
 					items,
@@ -169,7 +173,6 @@ export class Scrapeless implements INodeType {
 					default:
 						throw new NodeOperationError(this.getNode(), `Unsupported resource: ${resource}`);
 				}
-
 
 				returnData.push(responseItem);
 			} catch (error) {
